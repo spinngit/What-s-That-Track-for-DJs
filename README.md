@@ -23,4 +23,4 @@
 ## 付記
 - ChatGPTによるバイブコーディングで作成しました。
 - 改良・改変など自由に行っていただいて構いません。
-- LICENSE: [GNU General Public License v3.0](LICENSE.md)
+- LICENSE: [GNU General Public License v3.0 or later](LICENSE.md)
