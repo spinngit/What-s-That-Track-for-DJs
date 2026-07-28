@@ -15,7 +15,7 @@
 - あらかじめDJで使いそうな曲の「アーティスト名・曲名」と「ジャケット画像」を最大50曲まで登録しておけます。
 - 各曲をクリックすると、フェードと共に画面が切り替わります。
 - 特に難しいことはしていないので、さわったら使い方はすぐにわかると思います。
-<img width="1710" height="997" alt="image" src="https://github.com/user-attachments/assets/b09e9f0f-e020-40ce-9417-e1cc0c57881b" />
+<img width="1071" height="881" alt="image" src="https://github.com/user-attachments/assets/7b0bf1fd-b339-467c-9057-b1fffd7b13bc" />
 
 ##付記
 - ChatGPTによるバイブコーディングで作成しました。
