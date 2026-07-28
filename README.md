@@ -5,8 +5,8 @@
 - HTMLファイルをダウンロードし、ブラウザで開くだけで動作します。インストールは不要です。
 - あとは開いたウィンドウを、あなたの配信環境にあわせて配信してください。
 - たとえばOBS Studioなどでは、別ウィンドウで開く表示画面をウィンドウキャプチャして使用します。
+<img width="1905" height="1006" alt="image" src="https://github.com/user-attachments/assets/cc7d3073-f76d-44de-b7c5-48b24b7ae794" />
 
-<img width="1905" height="1074" alt="image" src="https://github.com/user-attachments/assets/c5599e71-a408-4c94-998f-61ee5d790d0b" />
 
 ## 導入方法
 - 上にあるHTMLファイル（NHE_TextDisplay50.html）をダウンロードし、デスクトップなどに置いてブラウザで開いてください。
