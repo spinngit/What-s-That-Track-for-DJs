@@ -334,7 +334,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
   <main class="controller">
     <h1>テキスト表示コントローラー</h1>
     <p class="description">
-      テキストを記録した後、各履歴のサムネイルからジャケット画像を個別に登録できます。
+      テキストを登録した後、各履歴のサムネイルからジャケット画像を個別に登録できます。
     </p>
 
     <form id="textForm">
@@ -360,7 +360,7 @@ Gigantic Days</textarea>
       </div>
 
       <div class="actions">
-        <button id="recordText" type="button">記録</button>
+        <button id="recordText" type="button">登録</button>
 
         <div class="display-actions">
           <button id="openDisplay" type="button">表示画面を開く</button>
@@ -372,9 +372,9 @@ Gigantic Days</textarea>
     </form>
 
     <section class="history" aria-labelledby="historyTitle">
-      <h2 id="historyTitle">記録（最大50件）</h2>
+      <h2 id="historyTitle">登録（最大50件）</h2>
       <div id="historyList" class="history-list"></div>
-      <p id="emptyHistory">まだ記録はありません。</p>
+      <p id="emptyHistory">まだ登録はありません。</p>
     </section>
 
     <input id="coverInput" type="file" accept="image/*" hidden>
@@ -638,7 +638,7 @@ Gigantic Days</textarea>
         coverButton.className = "cover-register-button";
         coverButton.setAttribute(
           "aria-label",
-          `記録${displayIndex + 1}のジャケット画像を${
+          `登録${displayIndex + 1}のジャケット画像を${
             entry.imageData ? "変更" : "登録"
           }`
         );
@@ -668,7 +668,7 @@ Gigantic Days</textarea>
         button.className = "history-button";
         button.setAttribute(
           "aria-label",
-          `記録${displayIndex + 1}を画面に反映`
+          `登録${displayIndex + 1}を画面に反映`
         );
 
         const text = document.createElement("span");
@@ -685,7 +685,7 @@ Gigantic Days</textarea>
           );
           message.className = "";
           message.textContent =
-            `記録${displayIndex + 1}を画面に反映しました。`;
+            `登録${displayIndex + 1}を画面に反映しました。`;
         });
 
         const deleteButton = document.createElement("button");
@@ -694,7 +694,7 @@ Gigantic Days</textarea>
         deleteButton.textContent = "削除";
         deleteButton.setAttribute(
           "aria-label",
-          `記録${displayIndex + 1}を削除`
+          `登録${displayIndex + 1}を削除`
         );
 
         deleteButton.addEventListener("click", () => {
@@ -704,14 +704,14 @@ Gigantic Days</textarea>
           if (!saveHistory()) {
             historyEntries = previousEntries;
             message.className = "error";
-            message.textContent = "記録を削除できませんでした。";
+            message.textContent = "登録を削除できませんでした。";
             return;
           }
 
           renderHistory();
           message.className = "";
           message.textContent =
-            `記録${displayIndex + 1}を削除しました。`;
+            `登録${displayIndex + 1}を削除しました。`;
         });
 
         item.append(coverButton, button, deleteButton);
@@ -1136,7 +1136,7 @@ Gigantic Days</textarea>
 
           if (!entry) {
             message.className = "error";
-            message.textContent = "対象の記録が見つかりません。";
+            message.textContent = "対象の登録が見つかりません。";
             return;
           }
 
@@ -1167,7 +1167,7 @@ Gigantic Days</textarea>
 
         if (!hasVisibleText(lines)) {
           message.className = "error";
-          message.textContent = "記録する文字を入力してください。";
+          message.textContent = "登録する文字を入力してください。";
           input.focus();
           return;
         }
@@ -1184,14 +1184,14 @@ Gigantic Days</textarea>
           historyEntries = previousEntries;
           message.className = "error";
           message.textContent =
-            "記録を保存できませんでした。画像の容量が大きすぎる可能性があります。";
+            "登録を保存できませんでした。画像の容量が大きすぎる可能性があります。";
           return;
         }
 
         renderHistory();
 
         message.className = "";
-        message.textContent = "入力内容を記録しました。";
+        message.textContent = "入力内容を登録しました。";
       });
 
       fadeOutButton.addEventListener("click", () => {
