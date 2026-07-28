@@ -1,0 +1,1225 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>テキスト表示コントローラー</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #f3f5f7;
+      color: #17202a;
+      font-family: "Segoe UI", sans-serif;
+      font-weight: 400;
+    }
+
+    /* 入力・操作画面 */
+    .controller {
+      width: min(720px, calc(100% - 48px));
+      margin: 48px auto;
+      padding: 32px;
+      border: 1px solid #e1e5e9;
+      border-radius: 16px;
+      background: #ffffff;
+      box-shadow: 0 18px 50px rgb(23 32 42 / 8%);
+    }
+
+    .controller h1 {
+      margin: 0 0 8px;
+      font-size: 28px;
+    }
+
+    .description {
+      margin: 0 0 24px;
+      color: #5d6975;
+      line-height: 1.7;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 150px;
+      resize: vertical;
+      padding: 14px 16px;
+      border: 1px solid #bdc6cf;
+      border-radius: 10px;
+      font: inherit;
+      line-height: 1.7;
+    }
+
+    textarea:focus {
+      border-color: #1b65d8;
+      outline: 3px solid rgb(27 101 216 / 15%);
+    }
+
+    .crossfade-setting {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-top: 16px;
+      padding: 14px;
+      border: 1px solid #d8dee5;
+      border-radius: 10px;
+      background: #f6f8fa;
+    }
+
+    .crossfade-copy {
+      min-width: 0;
+    }
+
+    .crossfade-copy strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .crossfade-copy span {
+      color: #66727e;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .display-actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    button {
+      min-height: 44px;
+      padding: 0 20px;
+      border: 0;
+      border-radius: 999px;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    #openDisplay {
+      background: #e7edf5;
+      color: #24415f;
+    }
+
+    #recordText {
+      background: #d92d20;
+      color: #ffffff;
+    }
+
+    #fadeOutText {
+      background: #38414b;
+      color: #ffffff;
+    }
+
+    #sendText {
+      background: #1b65d8;
+      color: #ffffff;
+    }
+
+    button:hover {
+      filter: brightness(0.95);
+    }
+
+    button:focus-visible {
+      outline: 3px solid rgb(27 101 216 / 25%);
+      outline-offset: 2px;
+    }
+
+    #message {
+      min-height: 1.5em;
+      margin: 12px 0 0;
+      color: #52606d;
+      font-size: 14px;
+      text-align: right;
+    }
+
+    #message.error {
+      color: #c2352a;
+    }
+
+    .history {
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid #e1e5e9;
+    }
+
+    .history h2 {
+      margin: 0 0 12px;
+      color: #52606d;
+      font-size: 15px;
+    }
+
+    .history-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .history-item {
+      display: grid;
+      grid-template-columns: 80px minmax(0, 1fr) auto;
+      gap: 8px;
+    }
+
+    .cover-register-button {
+      position: relative;
+      width: 80px;
+      height: 80px;
+      min-height: 80px;
+      padding: 0;
+      overflow: hidden;
+      border: 1px solid #cbd3dc;
+      border-radius: 8px;
+      background: #e7edf5;
+      color: #52606d;
+    }
+
+    .cover-register-button::before {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding-bottom: 20px;
+      content: "＋";
+      font-size: 28px;
+      font-weight: 400;
+    }
+
+    .crossfade-register-button {
+      width: 100px;
+      height: 100px;
+      min-height: 100px;
+      flex: 0 0 100px;
+    }
+
+    .cover-register-label {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 2;
+      padding: 5px 2px;
+      background: rgb(217 45 32 / 90%);
+      color: #ffffff;
+      font-size: 11px;
+      line-height: 1.1;
+      text-align: center;
+    }
+
+    .history-button {
+      width: 100%;
+      min-height: 80px;
+      padding: 12px 14px;
+      border: 1px solid #d8dee5;
+      border-radius: 10px;
+      background: #f6f8fa;
+      color: #17202a;
+      font-weight: 400;
+      line-height: 1.5;
+      text-align: left;
+    }
+
+    .history-button:hover {
+      border-color: #aab5c0;
+      background: #eef2f6;
+    }
+
+    .history-thumbnail {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .history-text {
+      min-width: 0;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    .history-delete-button {
+      padding: 0 16px;
+      border-radius: 10px;
+      background: #d92d20;
+      color: #ffffff;
+    }
+
+    #emptyHistory {
+      margin: 0;
+      color: #8a949e;
+      font-size: 14px;
+    }
+
+    /* 表示画面：指定されたHTMLの見た目 */
+    .display-content {
+      display: none;
+      position: absolute;
+      inset: 0;
+    }
+
+    .cover {
+      position: absolute;
+      top: 75px;
+      left: 50%;
+      width: 600px;
+      height: 600px;
+      transform: translateX(-50%);
+      object-fit: cover;
+      opacity: 0;
+    }
+
+    .text {
+      position: absolute;
+      left: 80px;
+      bottom: 80px;
+      z-index: 3;
+      font-size: 40px;
+      font-family: "Segoe UI", sans-serif;
+      font-weight: 400;
+      color: #FCFCF0;
+      letter-spacing: 0em;
+      line-height: 1.4;
+      text-shadow: 4px 4px 8px rgba(0, 0, 0, 0.75);
+      opacity: 0;
+    }
+
+    .line {
+      margin: 0;
+      padding: 0;
+    }
+
+    body.display-mode {
+      width: 1920px;
+      height: 1080px;
+      min-height: 1080px;
+      background: #000000;
+      overflow: hidden;
+    }
+
+    body.display-mode .controller {
+      display: none;
+    }
+
+    body.display-mode .display-content {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <main class="controller">
+    <h1>テキスト表示コントローラー</h1>
+    <p class="description">
+      テキストを記録した後、各履歴のサムネイルからジャケット画像を個別に登録できます。
+    </p>
+
+    <form id="textForm">
+      <label for="textInput">表示するテキスト</label>
+      <textarea id="textInput">Oliver Night, Alex Phountzi
+Gigantic Days</textarea>
+
+      <div class="crossfade-setting">
+        <div class="crossfade-copy">
+          <strong>クロスフェード画像</strong>
+          <span>フェードアウト時に切り替える共通の600×600画像です。</span>
+        </div>
+        <button
+          id="crossfadeRegisterButton"
+          class="cover-register-button crossfade-register-button"
+          type="button"
+        >
+          <img id="crossfadePreview" class="history-thumbnail" alt="" hidden>
+          <span id="crossfadeRegisterLabel" class="cover-register-label">
+            画像登録
+          </span>
+        </button>
+      </div>
+
+      <div class="actions">
+        <button id="recordText" type="button">記録</button>
+
+        <div class="display-actions">
+          <button id="openDisplay" type="button">表示画面を開く</button>
+          <button id="fadeOutText" type="button">フェードアウト</button>
+          <button id="sendText" type="submit">画面に反映</button>
+        </div>
+      </div>
+      <p id="message" role="status" aria-live="polite"></p>
+    </form>
+
+    <section class="history" aria-labelledby="historyTitle">
+      <h2 id="historyTitle">記録（最大50件）</h2>
+      <div id="historyList" class="history-list"></div>
+      <p id="emptyHistory">まだ記録はありません。</p>
+    </section>
+
+    <input id="coverInput" type="file" accept="image/*" hidden>
+    <input id="crossfadeInput" type="file" accept="image/*" hidden>
+  </main>
+
+  <div id="displayContent" class="display-content" aria-live="polite">
+    <img id="displayCoverA" class="cover" alt="" hidden>
+    <img id="displayCoverB" class="cover" alt="" hidden>
+    <div id="displayText" class="text"></div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = "text-display-lines";
+    const COMMAND_KEY = "text-display-command";
+    const HISTORY_KEY = "text-display-history";
+    const CROSSFADE_IMAGE_KEY = "text-display-crossfade-image";
+    const DISPLAY_MODE = "display";
+    const FADE_DURATION = 2000;
+    const MAX_HISTORY = 50;
+    const defaultLines = [
+      "Oliver Night, Alex Phountzi",
+      "Gigantic Days"
+    ];
+
+    const isDisplayMode =
+      new URLSearchParams(window.location.search).get("mode") === DISPLAY_MODE;
+
+    const form = document.querySelector("#textForm");
+    const input = document.querySelector("#textInput");
+    const coverInput = document.querySelector("#coverInput");
+    const crossfadeInput = document.querySelector("#crossfadeInput");
+    const crossfadeRegisterButton =
+      document.querySelector("#crossfadeRegisterButton");
+    const crossfadePreview =
+      document.querySelector("#crossfadePreview");
+    const crossfadeRegisterLabel =
+      document.querySelector("#crossfadeRegisterLabel");
+    const recordButton = document.querySelector("#recordText");
+    const openButton = document.querySelector("#openDisplay");
+    const fadeOutButton = document.querySelector("#fadeOutText");
+    const message = document.querySelector("#message");
+    const historyList = document.querySelector("#historyList");
+    const emptyHistory = document.querySelector("#emptyHistory");
+    const displayContent = document.querySelector("#displayContent");
+    const displayCovers = [
+      document.querySelector("#displayCoverA"),
+      document.querySelector("#displayCoverB")
+    ];
+    const displayText = document.querySelector("#displayText");
+
+    let displayWindow = null;
+    let channel = null;
+    let activeAnimation = null;
+    let animationSequence = 0;
+    let lastUpdateId = null;
+    let historyEntries = [];
+    let pendingCoverEntryId = null;
+    let crossfadeImageData = null;
+    let activeCoverIndex = 0;
+    let currentCoverData = null;
+    let coverAnimationSequence = 0;
+    let activeCoverAnimations = [];
+
+    if ("BroadcastChannel" in window) {
+      channel = new BroadcastChannel("text-display-channel");
+    }
+
+    function loadPayload() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+
+        if (Array.isArray(saved) && saved.length) {
+          return {
+            type: "update",
+            updateId: null,
+            lines: saved,
+            imageData: null
+          };
+        }
+
+        if (Array.isArray(saved?.lines) && saved.lines.length) {
+          return {
+            ...saved,
+            imageData:
+              typeof saved.imageData === "string"
+                ? saved.imageData
+                : null
+          };
+        }
+      } catch {
+        // 保存内容を読めない場合は初期値を使用する。
+      }
+
+      return {
+        type: "update",
+        updateId: null,
+        lines: defaultLines,
+        imageData: null
+      };
+    }
+
+    function readInputLines() {
+      return input.value
+        .replace(/\r\n/g, "\n")
+        .split("\n")
+        .map((line) => line.trimEnd());
+    }
+
+    function hasVisibleText(lines) {
+      return lines.some((line) => line.trim());
+    }
+
+    function loadCrossfadeImage() {
+      try {
+        const saved = localStorage.getItem(CROSSFADE_IMAGE_KEY);
+        return typeof saved === "string" && saved ? saved : null;
+      } catch {
+        return null;
+      }
+    }
+
+    function saveCrossfadeImage(imageData) {
+      try {
+        localStorage.setItem(CROSSFADE_IMAGE_KEY, imageData);
+        return true;
+      } catch {
+        return false;
+      }
+    }
+
+    function renderCrossfadeSetting() {
+      if (crossfadeImageData) {
+        crossfadePreview.src = crossfadeImageData;
+        crossfadePreview.hidden = false;
+        crossfadeRegisterLabel.textContent = "画像変更";
+      } else {
+        crossfadePreview.hidden = true;
+        crossfadePreview.removeAttribute("src");
+        crossfadeRegisterLabel.textContent = "画像登録";
+      }
+    }
+
+    function compressCoverImage(file) {
+      return new Promise((resolve, reject) => {
+        const image = new Image();
+        const objectUrl = URL.createObjectURL(file);
+
+        image.addEventListener("load", () => {
+          const maxSize = 600;
+          const scale = Math.min(
+            1,
+            maxSize / Math.max(image.naturalWidth, image.naturalHeight)
+          );
+          const canvas = document.createElement("canvas");
+          canvas.width = Math.max(
+            1,
+            Math.round(image.naturalWidth * scale)
+          );
+          canvas.height = Math.max(
+            1,
+            Math.round(image.naturalHeight * scale)
+          );
+
+          const context = canvas.getContext("2d");
+
+          if (!context) {
+            URL.revokeObjectURL(objectUrl);
+            reject(new Error("Canvas is unavailable"));
+            return;
+          }
+
+          context.drawImage(image, 0, 0, canvas.width, canvas.height);
+          const imageData = canvas.toDataURL("image/webp", 0.85);
+          URL.revokeObjectURL(objectUrl);
+          resolve(imageData);
+        });
+
+        image.addEventListener("error", () => {
+          URL.revokeObjectURL(objectUrl);
+          reject(new Error("Image could not be loaded"));
+        });
+
+        image.src = objectUrl;
+      });
+    }
+
+    function createEntryId() {
+      if ("randomUUID" in crypto) {
+        return crypto.randomUUID();
+      }
+
+      return `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    }
+
+    function loadHistory() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(HISTORY_KEY));
+
+        if (Array.isArray(saved)) {
+          return saved
+            .map((entry) => {
+              if (typeof entry === "string" && entry.trim()) {
+                return {
+                  id: createEntryId(),
+                  text: entry,
+                  imageData: null
+                };
+              }
+
+              if (
+                typeof entry?.text === "string" &&
+                entry.text.trim()
+              ) {
+                return {
+                  id:
+                    typeof entry.id === "string"
+                      ? entry.id
+                      : createEntryId(),
+                  text: entry.text,
+                  imageData:
+                    typeof entry.imageData === "string"
+                      ? entry.imageData
+                      : null
+                };
+              }
+
+              return null;
+            })
+            .filter(Boolean)
+            .slice(0, MAX_HISTORY);
+        }
+      } catch {
+        // 保存内容を読めない場合は空の履歴を使用する。
+      }
+
+      return [];
+    }
+
+    function saveHistory() {
+      try {
+        localStorage.setItem(HISTORY_KEY, JSON.stringify(historyEntries));
+        return true;
+      } catch {
+        return false;
+      }
+    }
+
+    function renderHistory() {
+      historyList.replaceChildren();
+      emptyHistory.hidden = historyEntries.length > 0;
+
+      [...historyEntries].reverse().forEach((entry, displayIndex) => {
+        const storageIndex =
+          historyEntries.length - 1 - displayIndex;
+        const item = document.createElement("div");
+        item.className = "history-item";
+
+        const coverButton = document.createElement("button");
+        coverButton.type = "button";
+        coverButton.className = "cover-register-button";
+        coverButton.setAttribute(
+          "aria-label",
+          `記録${displayIndex + 1}のジャケット画像を${
+            entry.imageData ? "変更" : "登録"
+          }`
+        );
+
+        if (entry.imageData) {
+          const thumbnail = document.createElement("img");
+          thumbnail.className = "history-thumbnail";
+          thumbnail.src = entry.imageData;
+          thumbnail.alt = "";
+          coverButton.append(thumbnail);
+        }
+
+        const coverLabel = document.createElement("span");
+        coverLabel.className = "cover-register-label";
+        coverLabel.textContent =
+          entry.imageData ? "画像変更" : "画像登録";
+        coverButton.append(coverLabel);
+
+        coverButton.addEventListener("click", () => {
+          pendingCoverEntryId = entry.id;
+          coverInput.value = "";
+          coverInput.click();
+        });
+
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "history-button";
+        button.setAttribute(
+          "aria-label",
+          `記録${displayIndex + 1}を画面に反映`
+        );
+
+        const text = document.createElement("span");
+        text.className = "history-text";
+        text.textContent = entry.text;
+        button.append(text);
+
+        button.addEventListener("click", () => {
+          const lines = entry.text.split("\n");
+          input.value = entry.text;
+          updateDisplay(
+            lines,
+            entry.imageData || crossfadeImageData
+          );
+          message.className = "";
+          message.textContent =
+            `記録${displayIndex + 1}を画面に反映しました。`;
+        });
+
+        const deleteButton = document.createElement("button");
+        deleteButton.type = "button";
+        deleteButton.className = "history-delete-button";
+        deleteButton.textContent = "削除";
+        deleteButton.setAttribute(
+          "aria-label",
+          `記録${displayIndex + 1}を削除`
+        );
+
+        deleteButton.addEventListener("click", () => {
+          const previousEntries = [...historyEntries];
+          historyEntries.splice(storageIndex, 1);
+
+          if (!saveHistory()) {
+            historyEntries = previousEntries;
+            message.className = "error";
+            message.textContent = "記録を削除できませんでした。";
+            return;
+          }
+
+          renderHistory();
+          message.className = "";
+          message.textContent =
+            `記録${displayIndex + 1}を削除しました。`;
+        });
+
+        item.append(coverButton, button, deleteButton);
+        historyList.append(item);
+      });
+    }
+
+    function renderLines(lines) {
+      displayText.replaceChildren();
+
+      lines.forEach((text) => {
+        const line = document.createElement("div");
+        line.className = "line";
+        line.textContent = text || "\u00a0";
+        displayText.append(line);
+      });
+    }
+
+    function getCurrentOpacity() {
+      const opacity = Number.parseFloat(
+        window.getComputedStyle(displayText).opacity
+      );
+      return Number.isFinite(opacity) ? opacity : 0;
+    }
+
+    async function animateOpacity(from, to, sequence) {
+      const animation = displayText.animate(
+        [{ opacity: from }, { opacity: to }],
+        {
+          duration: FADE_DURATION,
+          easing: "ease-in-out",
+          fill: "forwards"
+        }
+      );
+      activeAnimation = animation;
+
+      try {
+        await animation.finished;
+      } catch {
+        return false;
+      }
+
+      if (sequence !== animationSequence) {
+        return false;
+      }
+
+      displayText.style.opacity = String(to);
+      animation.cancel();
+      activeAnimation = null;
+      return true;
+    }
+
+    function setInitialCover(imageData) {
+      activeCoverAnimations.forEach((animation) => animation.cancel());
+      activeCoverAnimations = [];
+      coverAnimationSequence += 1;
+
+      displayCovers.forEach((cover, index) => {
+        cover.style.opacity = index === 0 && imageData ? "1" : "0";
+        cover.style.zIndex = index === 0 ? "2" : "1";
+        cover.hidden = !(index === 0 && imageData);
+
+        if (index === 0 && imageData) {
+          cover.src = imageData;
+        } else {
+          cover.removeAttribute("src");
+        }
+      });
+
+      activeCoverIndex = 0;
+      currentCoverData = imageData || null;
+    }
+
+    async function crossfadeToCover(imageData) {
+      if (!imageData || imageData === currentCoverData) {
+        return;
+      }
+
+      const sequence = ++coverAnimationSequence;
+      activeCoverAnimations.forEach((animation) => animation.cancel());
+      activeCoverAnimations = [];
+
+      const fromCover = displayCovers[activeCoverIndex];
+      const toIndex = 1 - activeCoverIndex;
+      const toCover = displayCovers[toIndex];
+      const fromOpacity = fromCover.hidden
+        ? 0
+        : Number.parseFloat(
+            window.getComputedStyle(fromCover).opacity
+          ) || 0;
+
+      toCover.src = imageData;
+      toCover.hidden = false;
+      toCover.style.opacity = "0";
+      toCover.style.zIndex = "2";
+      fromCover.style.zIndex = "1";
+
+      try {
+        await toCover.decode();
+      } catch {
+        // データURLは読み込み済みの場合があるため、そのまま続行する。
+      }
+
+      if (sequence !== coverAnimationSequence) {
+        return;
+      }
+
+      const animations = [
+        toCover.animate(
+          [{ opacity: 0 }, { opacity: 1 }],
+          {
+            duration: FADE_DURATION,
+            easing: "ease-in-out",
+            fill: "forwards"
+          }
+        )
+      ];
+
+      if (fromOpacity > 0.01) {
+        animations.push(
+          fromCover.animate(
+            [{ opacity: fromOpacity }, { opacity: 0 }],
+            {
+              duration: FADE_DURATION,
+              easing: "ease-in-out",
+              fill: "forwards"
+            }
+          )
+        );
+      }
+
+      activeCoverAnimations = animations;
+
+      try {
+        await Promise.all(
+          animations.map((animation) => animation.finished)
+        );
+      } catch {
+        return;
+      }
+
+      if (sequence !== coverAnimationSequence) {
+        return;
+      }
+
+      toCover.style.opacity = "1";
+      fromCover.style.opacity = "0";
+      fromCover.hidden = true;
+      fromCover.removeAttribute("src");
+      animations.forEach((animation) => animation.cancel());
+      activeCoverAnimations = [];
+      activeCoverIndex = toIndex;
+      currentCoverData = imageData;
+    }
+
+    async function showInitialMedia(lines, imageData) {
+      const sequence = ++animationSequence;
+      renderLines(lines);
+      setInitialCover(imageData);
+      displayText.style.opacity = "0";
+
+      await new Promise((resolve) => {
+        requestAnimationFrame(resolve);
+      });
+
+      await animateOpacity(0, 1, sequence);
+    }
+
+    async function animateTextUpdate(lines, imageData) {
+      const currentOpacity = getCurrentOpacity();
+      const sequence = ++animationSequence;
+      const targetCover = imageData || crossfadeImageData;
+
+      if (targetCover) {
+        crossfadeToCover(targetCover);
+      }
+
+      if (activeAnimation) {
+        activeAnimation.cancel();
+      }
+
+      displayText.style.opacity = String(currentOpacity);
+
+      if (currentOpacity > 0.01) {
+        const fadedOut = await animateOpacity(
+          currentOpacity,
+          0,
+          sequence
+        );
+
+        if (!fadedOut) {
+          return;
+        }
+      }
+
+      if (sequence !== animationSequence) {
+        return;
+      }
+
+      displayText.style.opacity = "0";
+      renderLines(lines);
+      await animateOpacity(0, 1, sequence);
+    }
+
+    async function fadeOutCurrentText(standbyImageData) {
+      const currentOpacity = getCurrentOpacity();
+      const sequence = ++animationSequence;
+      const targetCover = standbyImageData || crossfadeImageData;
+
+      if (targetCover) {
+        crossfadeToCover(targetCover);
+      }
+
+      if (activeAnimation) {
+        activeAnimation.cancel();
+      }
+
+      displayText.style.opacity = String(currentOpacity);
+
+      if (currentOpacity <= 0.01) {
+        displayText.style.opacity = "0";
+        activeAnimation = null;
+        return;
+      }
+
+      await animateOpacity(currentOpacity, 0, sequence);
+    }
+
+    function createCommand(type, lines, imageData) {
+      return {
+        type,
+        updateId: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
+        ...(lines ? { lines } : {}),
+        ...(imageData ? { imageData } : {})
+      };
+    }
+
+    function sendCommand(payload) {
+      if (channel) {
+        channel.postMessage(payload);
+      }
+
+      if (displayWindow && !displayWindow.closed) {
+        displayWindow.postMessage(payload, "*");
+      }
+    }
+
+    function receiveCommand(payload) {
+      if (
+        !["update", "fade-out"].includes(payload?.type) ||
+        payload.updateId === lastUpdateId
+      ) {
+        return;
+      }
+
+      lastUpdateId = payload.updateId;
+
+      if (payload.type === "fade-out") {
+        if (typeof payload.imageData === "string") {
+          crossfadeImageData = payload.imageData;
+        }
+
+        fadeOutCurrentText(
+          typeof payload.imageData === "string"
+            ? payload.imageData
+            : crossfadeImageData
+        );
+      } else if (Array.isArray(payload.lines)) {
+        animateTextUpdate(
+          payload.lines,
+          typeof payload.imageData === "string"
+            ? payload.imageData
+            : null
+        );
+      }
+    }
+
+    function updateDisplay(
+      lines,
+      imageData = crossfadeImageData
+    ) {
+      const payload = createCommand("update", lines, imageData);
+
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+      } catch {
+        // ローカルファイルで保存が制限されていても、画面更新は続行する。
+      }
+
+      sendCommand(payload);
+    }
+
+    function fadeOutDisplay() {
+      const payload = createCommand(
+        "fade-out",
+        null,
+        crossfadeImageData
+      );
+
+      try {
+        localStorage.setItem(COMMAND_KEY, JSON.stringify(payload));
+      } catch {
+        // ローカルファイルで保存が制限されていても、画面更新は続行する。
+      }
+
+      sendCommand(payload);
+    }
+
+    crossfadeImageData = loadCrossfadeImage();
+
+    if (isDisplayMode) {
+      document.body.classList.add("display-mode");
+      document.title = "テキスト表示画面";
+      const initialPayload = loadPayload();
+      showInitialMedia(
+        initialPayload.lines,
+        initialPayload.imageData || crossfadeImageData
+      );
+
+      if (channel) {
+        channel.addEventListener("message", (event) => {
+          receiveCommand(event.data);
+        });
+      }
+
+      window.addEventListener("message", (event) => {
+        receiveCommand(event.data);
+      });
+
+      window.addEventListener("storage", (event) => {
+        if (event.key === STORAGE_KEY) {
+          receiveCommand(loadPayload());
+        } else if (event.key === COMMAND_KEY && event.newValue) {
+          try {
+            receiveCommand(JSON.parse(event.newValue));
+          } catch {
+            // 不正な通知は無視する。
+          }
+        }
+      });
+    } else {
+      const initialPayload = loadPayload();
+      input.value = initialPayload.lines.join("\n");
+      renderCrossfadeSetting();
+      historyEntries = loadHistory();
+      renderHistory();
+
+      openButton.addEventListener("click", () => {
+        const displayUrl = new URL(window.location.href);
+        displayUrl.searchParams.set("mode", DISPLAY_MODE);
+
+        displayWindow = window.open(
+          displayUrl.href,
+          "textDisplay",
+          "width=1280,height=720"
+        );
+
+        if (displayWindow) {
+          message.className = "";
+          message.textContent = "表示画面を開きました。";
+        } else {
+          message.className = "error";
+          message.textContent = "ポップアップの表示を許可してください。";
+        }
+      });
+
+      crossfadeRegisterButton.addEventListener("click", () => {
+        crossfadeInput.value = "";
+        crossfadeInput.click();
+      });
+
+      crossfadeInput.addEventListener("change", async () => {
+        const [file] = crossfadeInput.files;
+
+        if (!file) {
+          return;
+        }
+
+        message.className = "";
+        message.textContent = "クロスフェード画像を準備しています…";
+
+        try {
+          const imageData = await compressCoverImage(file);
+
+          if (!saveCrossfadeImage(imageData)) {
+            message.className = "error";
+            message.textContent =
+              "クロスフェード画像を保存できませんでした。保存容量が不足している可能性があります。";
+            return;
+          }
+
+          const hadImage = Boolean(crossfadeImageData);
+          crossfadeImageData = imageData;
+          renderCrossfadeSetting();
+          message.textContent = hadImage
+            ? "クロスフェード画像を変更しました。"
+            : "クロスフェード画像を登録しました。";
+        } catch {
+          message.className = "error";
+          message.textContent =
+            "クロスフェード画像を読み込めませんでした。";
+        }
+      });
+
+      coverInput.addEventListener("change", async () => {
+        const [file] = coverInput.files;
+        const entryId = pendingCoverEntryId;
+        pendingCoverEntryId = null;
+
+        if (!file || !entryId) {
+          return;
+        }
+
+        message.className = "";
+        message.textContent = "画像を準備しています…";
+
+        try {
+          const imageData = await compressCoverImage(file);
+          const entry = historyEntries.find(
+            (candidate) => candidate.id === entryId
+          );
+
+          if (!entry) {
+            message.className = "error";
+            message.textContent = "対象の記録が見つかりません。";
+            return;
+          }
+
+          const previousImageData = entry.imageData;
+          entry.imageData = imageData;
+
+          if (!saveHistory()) {
+            entry.imageData = previousImageData;
+            message.className = "error";
+            message.textContent =
+              "画像を保存できませんでした。保存容量が不足している可能性があります。";
+            return;
+          }
+
+          renderHistory();
+          message.textContent =
+            previousImageData
+              ? "ジャケット画像を変更しました。"
+              : "ジャケット画像を登録しました。";
+        } catch {
+          message.className = "error";
+          message.textContent = "画像を読み込めませんでした。";
+        }
+      });
+
+      recordButton.addEventListener("click", () => {
+        const lines = readInputLines();
+
+        if (!hasVisibleText(lines)) {
+          message.className = "error";
+          message.textContent = "記録する文字を入力してください。";
+          input.focus();
+          return;
+        }
+
+        const previousEntries = [...historyEntries];
+        historyEntries.unshift({
+          id: createEntryId(),
+          text: lines.join("\n"),
+          imageData: null
+        });
+        historyEntries = historyEntries.slice(0, MAX_HISTORY);
+
+        if (!saveHistory()) {
+          historyEntries = previousEntries;
+          message.className = "error";
+          message.textContent =
+            "記録を保存できませんでした。画像の容量が大きすぎる可能性があります。";
+          return;
+        }
+
+        renderHistory();
+
+        message.className = "";
+        message.textContent = "入力内容を記録しました。";
+      });
+
+      fadeOutButton.addEventListener("click", () => {
+        fadeOutDisplay();
+        message.className = crossfadeImageData ? "" : "error";
+        message.textContent = crossfadeImageData
+          ? "テキストのフェードアウトと画像のクロスフェードを開始しました。"
+          : "クロスフェード画像が未登録のため、テキストだけをフェードアウトします。";
+      });
+
+      form.addEventListener("submit", (event) => {
+        event.preventDefault();
+
+        const lines = readInputLines();
+
+        if (!hasVisibleText(lines)) {
+          message.className = "error";
+          message.textContent = "表示する文字を入力してください。";
+          input.focus();
+          return;
+        }
+
+        updateDisplay(lines);
+        message.className = "";
+        message.textContent = "表示内容を更新しました。";
+      });
+
+      input.addEventListener("keydown", (event) => {
+        if ((event.ctrlKey || event.metaKey) && event.key === "Enter") {
+          form.requestSubmit();
+        }
+      });
+    }
+  </script>
+</body>
+</html>
