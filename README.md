@@ -6,8 +6,8 @@
 <img width="1905" height="1074" alt="image" src="https://github.com/user-attachments/assets/c5599e71-a408-4c94-998f-61ee5d790d0b" />
 
 ## 導入方法
-- 上にあるhtmlファイル（
-
+- 上にあるhtmlファイル（NHE_TextDisplay50.html）をダウンロードし、デスクトップなどにおいてブラウザで開いてください。
+- アプリのインストールなどはありません。これはhtmlとスクリプトによるプログラムです。
 
 ## コントローラー画面
 - htmlを開くとこのコントローラー画面になります。
