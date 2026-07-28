@@ -17,6 +17,6 @@
 - 特に難しいことはしていないので、さわったら使い方はすぐにわかると思います。
 <img width="1071" height="881" alt="image" src="https://github.com/user-attachments/assets/7b0bf1fd-b339-467c-9057-b1fffd7b13bc" />
 
-##付記
+## 付記
 - ChatGPTによるバイブコーディングで作成しました。
 - 改良・改変など自由に行っていただいて構いません。
