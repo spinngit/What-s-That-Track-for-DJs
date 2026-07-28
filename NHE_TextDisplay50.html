@@ -342,6 +342,17 @@ SPDX-License-Identifier: GPL-3.0-or-later
       <textarea id="textInput">Oliver Night, Alex Phountzi
 Gigantic Days</textarea>
 
+      <div class="actions">
+        <button id="recordText" type="button">登録</button>
+
+        <div class="display-actions">
+          <button id="openDisplay" type="button">表示画面を開く</button>
+          <button id="fadeOutText" type="button">フェードアウト</button>
+          <button id="sendText" type="submit">画面に反映</button>
+        </div>
+      </div>
+      <p id="message" role="status" aria-live="polite"></p>
+
       <div class="crossfade-setting">
         <div class="crossfade-copy">
           <strong>クロスフェード画像</strong>
@@ -358,17 +369,6 @@ Gigantic Days</textarea>
           </span>
         </button>
       </div>
-
-      <div class="actions">
-        <button id="recordText" type="button">登録</button>
-
-        <div class="display-actions">
-          <button id="openDisplay" type="button">表示画面を開く</button>
-          <button id="fadeOutText" type="button">フェードアウト</button>
-          <button id="sendText" type="submit">画面に反映</button>
-        </div>
-      </div>
-      <p id="message" role="status" aria-live="polite"></p>
     </form>
 
     <section class="history" aria-labelledby="historyTitle">
