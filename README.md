@@ -18,7 +18,7 @@
 - 「フェードアウト」を押すと、テキストは2秒でフェードアウトし、ジャケット画像は登録した共通画像へ2秒でクロスフェードします。
 - 記録内容はブラウザのローカルストレージに保存されます。
 - 特に難しいことはしていないので、さわったら使い方はすぐにわかると思います。
-<img width="1071" height="881" alt="image" src="https://github.com/user-attachments/assets/7b0bf1fd-b339-467c-9057-b1fffd7b13bc" />
+<img width="1052" height="806" alt="image" src="https://github.com/user-attachments/assets/0a1f0ccd-307c-40dc-9cb6-1c662604bbc0" />
 
 ## 付記
 - ChatGPTによるバイブコーディングで作成しました。
